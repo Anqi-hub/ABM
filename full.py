@@ -1,4 +1,5 @@
 import random
+import csv
 from time import sleep
 from gridworld import ask
 from gridworld import Agent, TorusGrid, GridWorld
@@ -14,7 +15,7 @@ params.update(cell_initial_supply=0.0, cell_max_produce=0.01)
 params.update(agent_max_extract=1.0)
 params.update(agent_exit_probability=0)
 params.update(agent_size_mean=0.1, agent_size_sd=0.03)
-params.update(logfile='sizes.csv', logformat='\n{min}, {mean}, {max}')
+params.update(logfile='sizes.csv')
 def read_celldata(filename):
     location2value = dict()
     maxx, maxy = 0, 0
@@ -131,14 +132,17 @@ class World08(World05):
         World05.setup(self)
         self.header2logfile() # write header to logfile
     def header2logfile(self):
-        with open(params['logfile'], 'w') as fout:
-            fout.write('minimum, mean, maximum')
+        headers = list(range(100))
+        with open('sizes.csv', 'w') as fout:
+            fout_csv = csv.writer(fout)
+            fout_csv.writerow(headers)
     def log2logfile(self):
         agents = self.get_agents(self.AgentType)
         sizes = list(agent.size for agent in agents)
-        stats = describe(sizes)
-        with open(params['logfile'], 'a') as fout:
-            fout.write(params['logformat'].format(**stats))
+        NewList = [[x] for x in sizes]
+        with open('sizes.csv', 'a',newline='') as fout:
+                writer = csv.writer(fout)
+                writer.writerow(NewList)
     def schedule(self):
         self.log2logfile() #self. agents size
         World05.schedule(self)
